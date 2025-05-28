@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Expense Tracker</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    /* Reset some basic styles */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: 0;
+      padding: 0;
+      color: #2c2c2c;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 50px;
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 95%;
+      background-color: #ffffffdd;
+      backdrop-filter: saturate(180%) blur(20px);
+      border-radius: 20px;
+      box-shadow:
+        0 25px 50px rgba(102, 126, 234, 0.3),
+        0 10px 30px rgba(118, 75, 162, 0.2);
+      padding: 36px 48px 48px 48px;
+      box-sizing: border-box;
+      color: #251f5a;
+      border: 2px solid #5a4bcf;
+      transition: box-shadow 0.4s ease;
+    }
+
+    .container:hover {
+      box-shadow:
+        0 30px 70px rgba(102, 126, 234, 0.5),
+        0 12px 40px rgba(118, 75, 162, 0.3);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+      color: #4b3bff;
+      text-shadow: 1px 1px 8px rgba(107, 87, 255, 0.7);
+      user-select: text;
+    }
+
+    header h1 {
+      font-weight: 700;
+      font-size: 3rem;
+      letter-spacing: 3px;
+      margin: 0;
+    }
+
+    .expense-form, .expense-table, .report {
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      color: #4b3bff;
+      margin-bottom: 24px;
+      font-size: 2rem;
+      border-bottom: 4px solid #764ba2;
+      padding-bottom: 10px;
+      letter-spacing: 1.5px;
+      user-select: text;
+    }
+
+    /* Expense form: stack inputs vertically */
+    .expense-form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .expense-form input,
+    .expense-form select {
+      padding: 14px 18px;
+      margin: 10px 0;
+      border: 2px solid #7d6eff;
+      border-radius: 14px;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      color: #4a4a4a;
+      font-weight: 600;
+      background-color: #fefeffdd;
+      user-select: text;
+    }
+
+    .expense-form input::placeholder,
+    .expense-form select option[value=""] {
+      color: #b5b5d9;
+      font-weight: 500;
+    }
+
+    .expense-form input:focus,
+    .expense-form select:focus {
+      border-color: #4b3bff;
+      outline: none;
+      box-shadow: 0 0 12px rgba(107, 87, 255, 0.65);
+      background-color: #fdfaff;
+    }
+
+    /* Smaller Add Expense button */
+    .expense-form button {
+      padding: 10px 20px;
+      margin: 14px 0 0 0;
+      background: linear-gradient(90deg, #7652f7, #4b3bff);
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.25s ease, box-shadow 0.3s ease;
+      width: auto;
+      align-self: flex-start;
+      box-shadow:
+        0 6px 12px rgba(75, 59, 255, 0.5);
+      user-select: none;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.12);
+      letter-spacing: 0.8px;
+    }
+
+    .expense-form button:hover {
+      background: linear-gradient(90deg, #4b3bff, #7652f7);
+      transform: translateY(-2px);
+      box-shadow:
+        0 10px 20px rgba(75, 59, 255, 0.6);
+    }
+    .expense-form button:active {
+      transform: translateY(0);
+      box-shadow:
+        0 5px 10px rgba(75, 59, 255, 0.5);
+    }
+
+    select#filter-category {
+      width: 220px;
+      padding: 12px 18px;
+      border-radius: 40px;
+      border: 2px solid #764ba2;
+      font-weight: 700;
+      cursor: pointer;
+      color: #4a4a4a;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fafaff;
+      box-sizing: border-box;
+      user-select: text;
+      margin-bottom: 24px;
+    }
+    select#filter-category:focus {
+      border-color: #4b3bff;
+      outline: none;
+      box-shadow: 0 0 14px rgba(75, 59, 255, 0.55);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 16px;
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 1rem;
+      user-select: text;
+    }
+
+    thead th {
+      background-color: #764ba2;
+      color: #fff;
+      font-weight: 700;
+      padding: 14px 16px;
+      border-radius: 20px 20px 0 0;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      user-select: none;
+      box-shadow: 0 3px 10px rgba(118, 75, 162, 0.4);
+    }
+
+    tbody tr {
+      background-color: #f9faff;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 5px 12px rgba(118, 75, 162, 0.15);
+      cursor: default;
+    }
+    tbody tr:hover {
+      background-color: #e8e1ff;
+      box-shadow: 0 8px 18px rgba(118, 75, 162, 0.25);
+    }
+
+    tbody td {
+      padding: 16px 20px;
+      vertical-align: middle;
+      border: none;
+      color: #5b4a9e;
+      transition: color 0.25s ease;
+    }
+    tbody td:hover {
+      color: #4b3bff;
+    }
+
+    tbody td:last-child {
+      width: 80px;
+      text-align: center;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Options menu */
+    .options {
+      cursor: pointer;
+      font-size: 24px;
+      color: #764ba2;
+      user-select: none;
+      transition: color 0.3s ease;
+      display: inline-block;
+      padding: 0 6px;
+    }
+    .options:hover {
+      color: #4b3bff;
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 3px #4b3bffaa);
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 36px;
+      right: 12px;
+      background-color: #fff;
+      border: 2px solid #764ba2;
+      z-index: 20;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(75, 59, 255, 0.35);
+      min-width: 130px;
+      font-weight: 700;
+      user-select: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-5px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .dropdown.show {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .dropdown button {
+      background: none;
+      color: #764ba2;
+      padding: 14px 18px;
+      width: 100%;
+      text-align: left;
+      border: none;
+      cursor: pointer;
+      font-size: 1.05rem;
+      border-radius: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+    .dropdown button:hover {
+      background-color: #4b3bff;
+      color: #fff;
+      text-shadow: 0 0 4px #000;
+    }
+
+    #total-expense {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #4b3bff;
+      text-align: right;
+      padding-top: 12px;
+      user-select: text;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 10px #7c64ff88;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 700px) {
+      input, select {
+        width: 100%;
+        margin: 12px 0;
+        border-radius: 14px;
+      }
+      .expense-form button {
+        width: 100%;
+        margin: 16px 0 0 0;
+      }
+      #filter-category {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      tbody td:last-child {
+        width: 55px;
+      }
+    }
+
+    /* Category label caps and emojis */
+    .category-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #5a4bcf;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Personal Expense Tracker">
+    <header>
+      <h1>Personal Expense Tracker</h1>
+    </header>
+
+    <section class="expense-form" aria-label="Add New Expense Form">
+      <h2>Add New Expense</h2>
+      <input type="text" id="description" placeholder="Description" aria-label="Description" required autocomplete="off"/>
+      <input type="number" id="amount" placeholder="Amount" step="0.01" aria-label="Amount" required min="0.01" autocomplete="off"/>
+      <select id="category" aria-label="Category" required>
+        <option value="">Select Category</option>
+        <option value="food">🍔 Food</option>
+        <option value="transport">🚗 Transport</option>
+        <option value="entertainment">🎮 Entertainment</option>
+        <option value="utilities">💡 Utilities</option>
+      </select>
+      <button type="button" onclick="addExpense()">Add Expense</button>
+    </section>
+
+    <section class="expense-table" aria-label="Expense List Table">
+      <h2>Expense List</h2>
+      <select id="filter-category" aria-label="Filter by category" onchange="filterExpenses()">
+        <option value="">All Categories</option>
+        <option value="food">🍔 Food</option>
+        <option value="transport">🚗 Transport</option>
+        <option value="entertainment">🎮 Entertainment</option>
+        <option value="utilities">💡 Utilities</option>
+      </select>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>⋮</th>
+          </tr>
+        </thead>
+        <tbody id="expense-list" aria-live="polite"></tbody>
+      </table>
+    </section>
+
+    <section class="report" aria-label="Expense Report Summary">
+      <h2>Expense Report</h2>
+      <p id="total-expense" aria-live="polite">Total Expense: ₹0.00</p>
+    </section>
+  </div>
+
+  <script>
+    let expenses = [];
+
+    window.onload = function () {
+      const saved = localStorage.getItem('expenses');
+      if (saved) {
+        expenses = JSON.parse(saved);
+        renderExpenses();
+        updateTotal();
+      }
+    };
+
+    function getCurrentDate() {
+      const today = new Date();
+      return today.toLocaleDateString();
+    }
+
+    function saveExpenses() {
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+    }
+
+    function addExpense() {
+      const description = document.getElementById('description').value.trim();
+      const amountInput = document.getElementById('amount').value.trim();
+      const amount = parseFloat(amountInput);
+      const category = document.getElementById('category').value;
+      const date = getCurrentDate();
+
+      if (description && !isNaN(amount) && amount > 0 && category) {
+        expenses.push({ description, amount, category, date });
+        saveExpenses();
+        renderExpenses();
+        updateTotal();
+        clearInputs();
+      } else {
+        alert('Please fill all fields with valid data.');
+      }
+    }
+
+    function renderExpenses(filterCategory = '') {
+      const expenseList = document.getElementById('expense-list');
+      if (!expenses.length) {
+        expenseList.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#aaa;">No expenses added yet.</td></tr>';
+        return;
+      }
+
+      expenseList.innerHTML = expenses
+        .map((expense, index) => ({ ...expense, index }))
+        .filter(expense => !filterCategory || expense.category === filterCategory)
+        .map(expense => `
+          <tr aria-label="Expense on ${expense.date}: ${expense.description}, ₹${expense.amount.toFixed(2)}, category ${expense.category}">
+            <td>${expense.date}</td>
+            <td>${expense.description}</td>
+            <td>₹${expense.amount.toFixed(2)}</td>
+            <td><span class="category-label">${categoryEmoji(expense.category)} ${capitalize(expense.category)}</span></td>
+            <td style="position: relative;">
+              <span class="options" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false" aria-label="Options" onclick="toggleDropdown(event, ${expense.index})">⋮</span>
+              <div class="dropdown" id="dropdown-${expense.index}" role="menu" aria-hidden="true">
+                <button role="menuitem" onclick="editExpense(${expense.index})">Edit</button>
+                <button role="menuitem" onclick="deleteExpense(${expense.index})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+    }
+
+    function updateTotal() {
+      const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+      document.getElementById('total-expense').textContent = `Total Expense: ₹${total.toFixed(2)}`;
+    }
+
+    function deleteExpense(index) {
+      if (confirm('Are you sure you want to delete this expense?')) {
+        expenses.splice(index, 1);
+        saveExpenses();
+        renderExpenses();
+        updateTotal();
+      }
+    }
+
+    function editExpense(index) {
+      const expense = expenses[index];
+      document.getElementById('description').value = expense.description;
+      document.getElementById('amount').value = expense.amount;
+      document.getElementById('category').value = expense.category;
+      deleteExpense(index); // remove original for re-entry
+    }
+
+    function filterExpenses() {
+      const filterCategory = document.getElementById('filter-category').value;
+      renderExpenses(filterCategory);
+    }
+
+    function clearInputs() {
+      document.getElementById('description').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('category').value = '';
+    }
+
+    function toggleDropdown(event, index) {
+      event.stopPropagation();
+      // Close all dropdowns
+      document.querySelectorAll('.dropdown').forEach(d => {
+        d.classList.remove('show');
+        d.setAttribute('aria-hidden', 'true');
+        const toggleBtn = d.previousElementSibling;
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+      });
+
+      const dropdown = document.getElementById(`dropdown-${index}`);
+      const toggleBtn = event.target;
+      const isVisible = dropdown.classList.contains('show');
+
+      if (!isVisible) {
+        dropdown.classList.add('show');
+        dropdown.setAttribute('aria-hidden', 'false');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        dropdown.classList.remove('show');
+        dropdown.setAttribute('aria-hidden', 'true');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.dropdown').forEach(dropdown => {
+        dropdown.classList.remove('show');
+        dropdown.setAttribute('aria-hidden', 'true');
+      });
+      document.querySelectorAll('.options').forEach(toggleBtn => {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Keyboard navigation for options button
+    document.addEventListener('keydown', function(e) {
+      if (e.target.classList.contains('options')) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const index = Array.from(document.querySelectorAll('.options')).indexOf(e.target);
+          toggleDropdown(e, index);
+        }
+        if (e.key === 'Escape') {
+          e.target.setAttribute('aria-expanded', 'false');
+          const dropdown = document.getElementById(`dropdown-${Array.from(document.querySelectorAll('.options')).indexOf(e.target)}`);
+          if (dropdown) {
+            dropdown.classList.remove('show');
+            dropdown.setAttribute('aria-hidden', 'true');
+          }
+          e.target.focus();
+        }
+      }
+    });
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function categoryEmoji(category) {
+      switch(category) {
+        case 'food': return '🍔';
+        case 'transport': return '🚗';
+        case 'entertainment': return '🎮';
+        case 'utilities': return '💡';
+        default: return '❓';
+      }
+    }
+  </script>
+</body>
+</html>
+
