@@ -451,12 +451,15 @@
     }
 
     function editExpense(index) {
-      const expense = expenses[index];
-      document.getElementById('description').value = expense.description;
-      document.getElementById('amount').value = expense.amount;
-      document.getElementById('category').value = expense.category;
-    //  deleteExpense(index); // remove original for re-entry
-    }
+    const expense = expenses[index];
+    document.getElementById('description').value = expense.description;
+    document.getElementById('amount').value = expense.amount;
+    document.getElementById('category').value = expense.category;
+    expenses.splice(index, 1); // Removes without confirm
+    renderExpenses();
+    updateTotal();
+}
+
 
     function filterExpenses() {
       const filterCategory = document.getElementById('filter-category').value;
